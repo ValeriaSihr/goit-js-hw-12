@@ -26,10 +26,10 @@
 .container {
   display: flex;
   justify-content: center;
-  margin-top: 36px;
+  margin-top: 30px;
 }
 .search-form {
-  margin-top: 36px;
+  margin-top: 30px;
 }
 .search-img-input {
   padding-left: 16px;
@@ -92,13 +92,15 @@
 }
 .gallery {
   display: flex;
-  gap: 24px;
+  gap: 15px;
   justify-content: space-around;
   align-items: center;
   flex-wrap: wrap;
+  margin-bottom: 20px;
 }
 .gallery-item {
   border: 1px solid #808080;
+
 }
 
 .gallery-image {
@@ -131,4 +133,24 @@
   line-height: 2;
   letter-spacing: 0.04em;
   color: #2e2f42;
+}
+
+.load-btn{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.load-more-btn{
+  width: 93px;
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  background-color: #4E75FF;
+
+}
+
+.load-more-btn:hover {
+  background-color:#6C8CFF;
 }

@@ -11,13 +11,19 @@ const form = document.querySelector('.search-form');
 const loader = document.querySelector('.css-loader');
 const gallery = document.querySelector('.gallery');
 
+let page = 1;
+
 form.addEventListener('submit', handelSubmit);
 
-function handelSubmit(event) {
+async function handelSubmit(event) {
   event.preventDefault();
   gallery.innerHTML = '';
   const dataSearch = event.currentTarget.elements.data.value.trim();
+  sessionStorage.setItem('text', dataSearch);
+  page = 1;
+
   if (dataSearch === '') {
+    form.reset();
     return iziToast.error({
       message:
         'Sorry, there are no images matching your search query. Please try again!',
@@ -27,11 +33,14 @@ function handelSubmit(event) {
       progressBarColor: 'black',
     });
   }
+
   showLoading(loader);
-  objectSearch(dataSearch)
+
+  await objectSearch(dataSearch, page)
     .then(data => {
       if (data.hits.length === 0) {
-        hideLoading(loader);
+        form.reset();
+        // hideLoading(loader);
         return iziToast.error({
           message:
             'Sorry, there are no images matching your search query. Please try again!',
@@ -41,18 +50,58 @@ function handelSubmit(event) {
           progressBarColor: 'black',
         });
       }
-      hideLoading(loader);
-      gallery.innerHTML = createMarkup(data.hits);
+
+      form.reset();
+      // hideLoading(loader);
+      gallery.insertAdjacentHTML('beforeend', createMarkup(data.hits));
       lightbox.refresh();
+      if (page < 500) {
+        loadBtn.classList.replace('btn-hidden', 'load-more');
+      }
+      if (page >= 500) {
+        loadBtn.classList.replace('load-more', 'btn-hidden');
+      }
     })
     .catch(error => {
+      form.reset();
       iziToast.error({
-        message: `${error}`,
+        message:
+          'Sorry, there are no images matching your search query. Please try again!',
+        position: 'bottomRight',
+        messageColor: 'white',
+        backgroundColor: 'red',
+        progressBarColor: 'black',
       });
     })
     .finally(() => {
-      form.reset();
+      hideLoading(loader);
     });
+}
+const loadBtn = document.querySelector('.load-more-btn');
+loadBtn.addEventListener('click', loadMore);
+
+async function loadMore() {
+  loadBtn.disabled = true;
+
+  try {
+    const text = sessionStorage.getItem('text');
+    const data = await objectSearch(text, page);
+
+    gallery.insertAdjacentHTML('beforeend', createMarkup(data.hits));
+    page += 1;
+
+    loadBtn.disabled = false;
+
+    const item = document.querySelector('.gallery-item');
+    const itemHeight = item.getBoundingClientRect().height;
+    window.scrollBy({
+      left: 0,
+      top: itemHeight * 2,
+      behavior: 'smooth',
+    });
+  } catch (error) {
+    alert(error.message);
+  }
 }
 
 const lightbox = new SimpleLightbox('.gallery a', {
