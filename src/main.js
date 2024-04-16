@@ -30,7 +30,7 @@ async function handelSubmit(event) {
         'Sorry, there are no images matching your search query. Please try again!',
       position: 'bottomRight',
       messageColor: 'white',
-      backgroundColor: 'red',
+      backgroundColor: 'darkred',
       progressBarColor: 'black',
     });
   }
@@ -39,31 +39,36 @@ async function handelSubmit(event) {
 
   await objectSearch(dataSearch, page)
     .then(data => {
+      console.log(data);
       if (data.hits.length === 0) {
         form.reset();
 
-        // hideLoading(loader);
         return iziToast.error({
           message:
             'Sorry, there are no images matching your search query. Please try again!',
           position: 'bottomRight',
           messageColor: 'white',
-          backgroundColor: 'red',
+          backgroundColor: 'darkred',
           progressBarColor: 'black',
         });
       }
-
       form.reset();
-      // hideLoading(loader);
+
       gallery.insertAdjacentHTML('beforeend', createMarkup(data.hits));
 
       lightbox.refresh();
+
       if (page < 500) {
         loadBtn.classList.replace('btn-hidden', 'load-more');
       }
       if (page > 500) {
         loadBtn.classList.replace('load-more', 'btn-hidden');
       }
+      // if (data.hits.length < 200) {
+      //   loadBtn.classList.replace('btn-hidden', 'load-more');
+      // } else {
+      //   loadBtn.classList.replace('load-more', 'btn-hidden');
+      // }
     })
     .catch(error => {
       form.reset();
@@ -72,7 +77,7 @@ async function handelSubmit(event) {
           'Sorry, there are no images matching your search query. Please try again!',
         position: 'bottomRight',
         messageColor: 'white',
-        backgroundColor: 'red',
+        backgroundColor: 'darkred',
         progressBarColor: 'black',
       });
     })
@@ -96,6 +101,11 @@ async function loadMore() {
     gallery.insertAdjacentHTML('beforeend', createMarkup(data.hits));
 
     loadBtn.disabled = false;
+
+    // !!!!!!!!!!!!!!!!!!!!
+    if (data.hits.length < 15) {
+      loadBtn.classList.add('btn-hidden');
+    }
 
     const item = document.querySelector('.gallery-item');
     console.log(item);

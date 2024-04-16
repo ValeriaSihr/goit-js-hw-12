@@ -1,4 +1,5 @@
 export function createMarkup(array) {
+  console.log(array);
   return array
     .map(
       ({
