@@ -19,6 +19,7 @@ async function handelSubmit(event) {
   event.preventDefault();
   gallery.innerHTML = '';
   const dataSearch = event.currentTarget.elements.data.value.trim();
+
   sessionStorage.setItem('text', dataSearch);
   page = 1;
 
@@ -40,6 +41,7 @@ async function handelSubmit(event) {
     .then(data => {
       if (data.hits.length === 0) {
         form.reset();
+
         // hideLoading(loader);
         return iziToast.error({
           message:
@@ -54,11 +56,12 @@ async function handelSubmit(event) {
       form.reset();
       // hideLoading(loader);
       gallery.insertAdjacentHTML('beforeend', createMarkup(data.hits));
+
       lightbox.refresh();
       if (page < 500) {
         loadBtn.classList.replace('btn-hidden', 'load-more');
       }
-      if (page >= 500) {
+      if (page > 500) {
         loadBtn.classList.replace('load-more', 'btn-hidden');
       }
     })
@@ -77,6 +80,8 @@ async function handelSubmit(event) {
       hideLoading(loader);
     });
 }
+
+// loading
 const loadBtn = document.querySelector('.load-more-btn');
 loadBtn.addEventListener('click', loadMore);
 
@@ -85,10 +90,10 @@ async function loadMore() {
 
   try {
     const text = sessionStorage.getItem('text');
+    page += 1;
     const data = await objectSearch(text, page);
 
     gallery.insertAdjacentHTML('beforeend', createMarkup(data.hits));
-    page += 1;
 
     loadBtn.disabled = false;
 
