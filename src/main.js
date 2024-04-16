@@ -98,10 +98,11 @@ async function loadMore() {
     loadBtn.disabled = false;
 
     const item = document.querySelector('.gallery-item');
+    console.log(item);
     const itemHeight = item.getBoundingClientRect().height;
     window.scrollBy({
       left: 0,
-      top: itemHeight * 2,
+      top: itemHeight * 3,
       behavior: 'smooth',
     });
   } catch (error) {
