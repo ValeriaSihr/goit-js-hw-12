@@ -7,9 +7,14 @@ import { createMarkup } from './js/render-functions';
 import { showLoading } from './js/render-functions';
 import { hideLoading } from './js/render-functions';
 
-const form = document.querySelector('.search-form');
-const loader = document.querySelector('.css-loader');
-const gallery = document.querySelector('.gallery');
+const selections = {
+  form: document.querySelector('.search-form'),
+  loader: document.querySelector('.css-loader'),
+  gallery: document.querySelector('.gallery'),
+  loadBtn: document.querySelector('.load-more-btn'),
+};
+
+const { form, loader, gallery, loadBtn } = selections;
 
 let page = 1;
 
@@ -17,6 +22,11 @@ form.addEventListener('submit', handelSubmit);
 
 async function handelSubmit(event) {
   event.preventDefault();
+
+  if (loadBtn.classList.contains('load-more')) {
+    loadBtn.classList.replace('load-more', 'btn-hidden');
+  }
+
   gallery.innerHTML = '';
   const dataSearch = event.currentTarget.elements.data.value.trim();
 
@@ -58,10 +68,14 @@ async function handelSubmit(event) {
 
       lightbox.refresh();
 
-      if (page < 500) {
+      // if (Math.ceil(data.totalHits / 15) === page) {
+      //   loadBtn.classList.add('btn-hidden');
+      // }
+
+      if (page < Math.ceil(data.totalHits / 15)) {
         loadBtn.classList.replace('btn-hidden', 'load-more');
       }
-      if (page > 500) {
+      if (page >= Math.ceil(data.totalHits / 15)) {
         loadBtn.classList.replace('load-more', 'btn-hidden');
       }
       // if (data.hits.length < 200) {
@@ -72,6 +86,7 @@ async function handelSubmit(event) {
     })
     .catch(error => {
       form.reset();
+
       iziToast.error({
         message:
           'Sorry, there are no images matching your search query. Please try again!',
@@ -87,7 +102,7 @@ async function handelSubmit(event) {
 }
 
 // loading
-const loadBtn = document.querySelector('.load-more-btn');
+
 loadBtn.addEventListener('click', loadMore);
 
 async function loadMore() {
@@ -106,6 +121,8 @@ async function loadMore() {
     if (data.hits.length < 15) {
       loadBtn.classList.add('btn-hidden');
     }
+
+    lightbox.refresh();
 
     const item = document.querySelector('.gallery-item');
     console.log(item);
